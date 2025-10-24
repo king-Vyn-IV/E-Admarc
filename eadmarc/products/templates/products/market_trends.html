@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Market Trends</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    .chart-card { background: #fff; border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+  </style>
+</head>
+<body>
+  <h1>📊 Market Trends</h1>
+
+  <div class="grid">
+    {% for item in market_data_json|json_script:"market-data" %}
+    {% endfor %}
+  </div>
+
+  <script>
+    const marketData = JSON.parse(document.getElementById('market-data').textContent);
+
+    marketData.forEach((item, idx) => {
+      const canvas = document.createElement('canvas');
+      canvas.id = 'chart-' + idx;
+      canvas.height = 300;
+      document.body.appendChild(canvas);
+
+      const ctx = canvas.getContext('2d');
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: item.trends.map(t => t.date),
+          datasets: [{
+            label: item.name + ' Price (MWK)',
+            data: item.trends.map(t => t.price),
+            borderColor: '#22c55e',
+            backgroundColor: 'rgba(34, 197, 94, 0.2)',
+            tension: 0.4,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { tooltip: { mode: 'index', intersect: false } },
+          scales: {
+            y: { beginAtZero: false },
+            x: { title: { display: true, text: 'Date' } }
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>

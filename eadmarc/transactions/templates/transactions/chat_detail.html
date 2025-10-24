@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Chat with {{ seller.username }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card shadow-sm mx-auto" style="border-radius:15px; max-width:800px;">
+        <!-- Header -->
+        <div class="card-header d-flex align-items-center" 
+             style="border-bottom:1px solid #ddd; background:#075E54; color:#fff; border-top-left-radius:15px; border-top-right-radius:15px;">
+            <img src="{% static 'images/avatar.png' %}" alt="{{ seller.username }}" 
+                 class="rounded-circle me-3" style="width:45px; height:45px;">
+            <h5 class="mb-0">{{ seller.username }}</h5>
+        </div>
+
+        <!-- Chat messages -->
+        <div id="chat-box" class="p-3" 
+             style="height:500px; overflow-y:auto; background:#ece5dd;">
+            {% for msg in messages %}
+            <div class="d-flex mb-2 {% if msg.sender == request.user %}justify-content-end{% else %}justify-content-start{% endif %} position-relative">
+                <div class="p-2 rounded shadow-sm position-relative" style="
+                    max-width:70%;
+                    background: {% if msg.sender == request.user %}#dcf8c6{% else %}#fff{% endif %};
+                    border-radius: 20px;
+                    word-wrap: break-word;
+                ">
+                    {% if msg.submission %}
+                        <!-- Product preview -->
+                        <div class="d-flex mb-2 align-items-center" style="border:1px solid #ddd; padding:5px; border-radius:10px; background:#f9f9f9;">
+                            {% if msg.submission.image %}
+                            <img src="{{ msg.submission.image.url }}" alt="{{ msg.submission.name }}" 
+                                 style="width:50px; height:50px; object-fit:cover; border-radius:5px; margin-right:10px;">
+                            {% endif %}
+                            <div>
+                                <strong>{{ msg.submission.name }}</strong><br>
+                                MWK {{ msg.submission.price|intcomma }} | Qty: {{ msg.quantity|default:"-" }}
+                            </div>
+                        </div>
+                    {% endif %}
+                    <p class="mb-1">{{ msg.content }}</p>
+                    <small class="text-muted" style="font-size:10px; position:absolute; bottom:5px; right:10px;">
+                        {{ msg.timestamp|date:"H:i" }}
+                    </small>
+
+                    <!-- 3-dot menu -->
+                    {% if msg.sender == request.user %}
+                    <div class="dropdown position-absolute" style="top:5px; right:5px;">
+                        <a class="text-muted" href="#" role="button" id="dropdownMenu{{ forloop.counter }}" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenu{{ forloop.counter }}">
+                            <li>
+                                <form method="post" action="{% url 'delete_message' msg.id %}">
+                                    {% csrf_token %}
+                                    <button class="dropdown-item text-danger" type="submit">Delete</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+                <p class="text-center text-muted mt-4">No messages yet. Start the conversation!</p>
+            {% endfor %}
+        </div>
+
+        <!-- Message input -->
+        <form method="post" class="card-footer d-flex align-items-center p-3" 
+              style="border-top:1px solid #ddd; background:#f0f0f0; border-bottom-left-radius:15px; border-bottom-right-radius:15px;">
+            {% csrf_token %}
+            <input type="text" name="message" class="form-control me-2" placeholder="Type a message..." required 
+                   style="border-radius:20px; padding:10px;">
+            <button type="submit" class="btn btn-success rounded-circle d-flex justify-content-center align-items-center" 
+                    style="width:45px; height:45px;">
+                <i class="bi bi-send-fill"></i>
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Auto-scroll to bottom on page load and after sending a message
+    const chatBox = document.getElementById('chat-box');
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    const observer = new MutationObserver(() => {
+        chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
+    });
+    observer.observe(chatBox, { childList: true });
+</script>
+
+<style>
+#chat-box::-webkit-scrollbar {
+    width: 6px;
+}
+#chat-box::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 3px;
+}
+#chat-box::-webkit-scrollbar-track {
+    background: transparent;
+}
+</style>
+{% endblock %}

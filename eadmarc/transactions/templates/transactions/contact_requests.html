@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Contact Requests{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <h2>📩 Contact Requests</h2>
+
+  {% if requests %}
+  <ul class="list-group">
+    {% for r in requests %}
+    <li class="list-group-item">
+      <strong>{{ r.buyer.username }}</strong> wants to buy
+      <strong>{{ r.quantity }}</strong> Kgs of 
+      <strong>{{ r.product.productName }}</strong>.
+      <span class="text-muted">({{ r.created_at|naturaltime }})</span>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No requests yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

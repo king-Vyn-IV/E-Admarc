@@ -1,0 +1,291 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+ <!-- Header -->
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center mb-5">
+      <div>
+        <h1 class="fw-bold text-success mb-1">
+          <i class="bi bi-person-circle me-2"></i>Welcome, {{ request.user.username }}
+        </h1>
+        <p class="text-muted mb-0">
+          <i class="bi bi-geo-alt me-1"></i>Manage your agricultural marketplace efficiently
+        </p>
+      </div>
+    </div>
+
+<!-- Stats Cards -->
+<div class="row g-3 mb-5 justify-content-center">
+    {% for stat in stats %}
+    <div class="col-12 col-sm-6 col-md-4 col-lg-2 d-flex justify-content-center">
+        <div class="card shadow-sm border-0 rounded-4 flex-fill text-center p-4 hover-shadow" style="background: #fff;">
+            <div class="d-flex flex-column align-items-center">
+                <div class="mb-3 d-flex align-items-center justify-content-center rounded-circle" 
+                     style="width: 60px; height: 60px; background: linear-gradient(135deg, {{ stat.bg_color_start }}, {{ stat.bg_color_end }}); font-size: 1.5rem;">
+                    {{ stat.emoji }}
+                </div>
+                <h6 class="text-muted mb-1">{{ stat.label }}</h6>
+                <p class="fs-5 fw-bold text-dark mb-0">
+                    {% if stat.value|stringformat:"s"|slice:"0:3" == "MWK" %}
+                        {{ stat.value }}
+                    {% else %}
+                        {{ stat.value|intcomma }}
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+
+<!-- Quick Actions (static HTML with emojis and unique colors) -->
+<div class="mb-5">
+    <h4 class="mb-3">Quick Actions</h4>
+    <div class="row g-3">
+        <!-- Manage Products -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-2 d-flex">
+            <a href="/products" 
+               class="card shadow-sm rounded-4 flex-fill text-decoration-none d-flex flex-row align-items-center p-3 hover-shadow"
+               style="background: linear-gradient(to bottom right, #4ade80, #16a34a); color: black;">
+                <div class="me-3 d-flex align-items-center justify-content-center" 
+                     style="width: 60px; height: 60px; background: rgba(255,255,255,0.25); border-radius: 16px; font-size: 1.5rem;">
+                    📦
+                </div>
+                <div class="flex-grow-1">
+                    <h6 class="fw-bold mb-1">Manage Products</h6>
+                    <p class="small mb-0">Add/Edit/Delete products</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Orders -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-2 d-flex">
+            <a href="{% url 'admin_addproduct' %}" 
+               class="card shadow-sm rounded-4 flex-fill text-decoration-none d-flex flex-row align-items-center p-3 hover-shadow"
+               style="background: linear-gradient(to bottom right, #60a5fa, #3b82f6); color: black;">
+                <div class="me-3 d-flex align-items-center justify-content-center" 
+                     style="width: 60px; height: 60px; background: rgba(255,255,255,0.25); border-radius: 16px; font-size: 1.5rem;">
+                    🛒
+                </div>
+                <div class="flex-grow-1">
+                    <h6 class="fw-bold mb-1">Orders</h6>
+                    <p class="small mb-0">Track consumer orders</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Sales Reports -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-2 d-flex">
+            <a href="/sales" 
+               class="card shadow-sm rounded-4 flex-fill text-decoration-none d-flex flex-row align-items-center p-3 hover-shadow"
+               style="background: linear-gradient(to bottom right, #facc15, #f59e0b); color: black;">
+                <div class="me-3 d-flex align-items-center justify-content-center" 
+                     style="width: 60px; height: 60px; background: rgba(255,255,255,0.25); border-radius: 16px; font-size: 1.5rem;">
+                    📈
+                </div>
+                <div class="flex-grow-1">
+                    <h6 class="fw-bold mb-1">Sales Reports</h6>
+                    <p class="small mb-0">View sales data</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Inventory Control -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-2 d-flex">
+            <a href="/inventory" 
+               class="card shadow-sm rounded-4 flex-fill text-decoration-none d-flex flex-row align-items-center p-3 hover-shadow"
+               style="background: linear-gradient(to bottom right, #f87171, #ef4444); color: black;">
+                <div class="me-3 d-flex align-items-center justify-content-center" 
+                     style="width: 60px; height: 60px; background: rgba(255,255,255,0.25); border-radius: 16px; font-size: 1.5rem;">
+                    🏬
+                </div>
+                <div class="flex-grow-1">
+                    <h6 class="fw-bold mb-1">Inventory</h6>
+                    <p class="small mb-0">Manage stock levels</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Search Marketplace -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-2 d-flex">
+            <a href="/search" 
+               class="card shadow-sm rounded-4 flex-fill text-decoration-none d-flex flex-row align-items-center p-3 hover-shadow"
+               style="background: linear-gradient(to bottom right, #34d399, #10b981); color: black;">
+                <div class="me-3 d-flex align-items-center justify-content-center" 
+                     style="width: 60px; height: 60px; background: rgba(255,255,255,0.25); border-radius: 16px; font-size: 1.5rem;">
+                    🔍
+                </div>
+                <div class="flex-grow-1">
+                    <h6 class="fw-bold mb-1">Search Marketplace</h6>
+                    <p class="small mb-0">Find products quickly</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Product Reviews -->
+        <div class="col-12 col-sm-6 col-md-4 col-lg-2 d-flex">
+            <a href="{% url 'submission' %}" 
+               class="card shadow-sm rounded-4 flex-fill text-decoration-none d-flex flex-row align-items-center p-3 hover-shadow"
+               style="background: linear-gradient(to bottom right, #a78bfa, #8b5cf6); color: black;">
+                <div class="me-3 d-flex align-items-center justify-content-center" 
+                     style="width: 60px; height: 60px; background: rgba(255,255,255,0.25); border-radius: 16px; font-size: 1.5rem;">
+                    ⭐
+                </div>
+                <div class="flex-grow-1">
+                    <h6 class="fw-bold mb-1">Product Reviews</h6>
+                    <p class="small mb-0">Manage submissions</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.hover-shadow {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.hover-shadow:hover {
+    transform: translateY(-5px) scale(1.05);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2) !important;
+}
+</style>
+
+
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-4" id="dashboardTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">Overview</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="submissions-tab" data-bs-toggle="tab" data-bs-target="#submissions" type="button" role="tab">Pending Submissions</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button" role="tab">Orders Management</button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="dashboardTabsContent">
+        <!-- Overview Tab -->
+        <div class="tab-pane fade show active" id="overview" role="tabpanel">
+            <div class="text-center py-5">
+                <i class="bi bi-bar-chart-line-fill fs-1 text-primary mb-3"></i>
+                <h4 class="fw-bold">Dashboard Overview</h4>
+                <p class="text-muted">Monitor your agricultural marketplace performance with real-time stats and insights.</p>
+            </div>
+        </div>
+
+        <!-- Submissions Tab -->
+        <div class="tab-pane fade" id="submissions" role="tabpanel">
+            {% if submissions %}
+            <div class="row g-3">
+                {% for sub in submissions %}
+                <div class="col-12 col-md-6">
+                    <div class="card shadow-sm rounded-3 border-0 hover-shadow p-3">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="fw-bold">{{ sub.productName }}</h6>
+                                <span class="badge bg-warning text-dark mb-2">Pending Review</span>
+                                <div class="small text-muted">
+                                    Quantity: {{ sub.quantity }} | Price/Unit: MWK {{ sub.pricePerUnit }} | Location: {{ sub.location }} | Farmer ID: {{ sub.farmerId }}
+                                </div>
+                            </div>
+                            <div class="d-flex flex-column gap-2">
+                                <a href="{% url 'approve_submission' sub.id %}" class="btn btn-success btn-sm">Approve</a>
+                                <a href="{% url 'reject_submission' sub.id %}" class="btn btn-danger btn-sm">Reject</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-clock-history fs-1 text-warning mb-3"></i>
+                <h5>No Pending Submissions</h5>
+                <p class="text-muted">All submissions have been processed.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Orders Tab -->
+        <div class="tab-pane fade" id="orders" role="tabpanel">
+            {% if orders %}
+            <div class="table-responsive mt-3">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th>Consumer ID</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td>{{ order.id }}</td>
+                            <td>{{ order.productName }}</td>
+                            <td>{{ order.quantity }}</td>
+                            <td>MWK {{ order.total|intcomma }}</td>
+                            <td>{{ order.consumerId }}</td>
+                            <td>
+                                <span class="badge 
+                                    {% if order.status == 'pending' %}bg-warning text-dark
+                                    {% elif order.status == 'confirmed' %}bg-success
+                                    {% elif order.status == 'delivered' %}bg-primary
+                                    {% elif order.status == 'rejected' %}bg-danger
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ order.status|capfirst }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    {% if order.status == 'pending' %}
+                                    <a href="{% url 'confirm_order' order.id %}" class="btn btn-success btn-sm">Confirm</a>
+                                    <a href="{% url 'reject_order' order.id %}" class="btn btn-danger btn-sm">Reject</a>
+                                    {% elif order.status == 'confirmed' %}
+                                    <a href="{% url 'mark_delivered' order.id %}" class="btn btn-primary btn-sm">Delivered</a>
+                                    {% endif %}
+                                    <a href="{% url 'view_order' order.id %}" class="btn btn-secondary btn-sm"><i class="bi bi-eye"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-cart-x fs-1 text-danger mb-3"></i>
+                <h5>No Orders Found</h5>
+                <p class="text-muted">Try adjusting your search or filter criteria.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+<style>
+.hover-shadow {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* Slight base shadow for all cards */
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.hover-shadow:hover {
+    transform: translateY(5px) scale(1.05);
+    /* Stronger shadow on hover */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+}
+
+</style>
+
+{% endblock %}

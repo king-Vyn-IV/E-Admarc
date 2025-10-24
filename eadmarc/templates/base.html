@@ -1,0 +1,201 @@
+{% load static %}
+{% load static i18n %}
+{% load widget_tweaks %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}E-ADMARC{% endblock %}</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        html, body {
+            height: 100%;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+        main {
+            flex: 1 0 auto; /* main content grows to fill space */
+        }
+        footer {
+            flex-shrink: 0; /* prevent footer from shrinking */
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark shadow-sm sticky-top" 
+     style="background: linear-gradient(to right, #16a34a, #15803d, #1e40af);">
+    <div class="container">
+        <!-- Logo -->
+        {% if user.is_authenticated %}
+            {% if user.is_superuser %}
+                {% url 'admin_dashboard' as dashboard_url %}
+            {% else %}
+                {% url 'user_dashboard' as dashboard_url %}
+            {% endif %}
+        {% else %}
+            {% url 'home' as dashboard_url %}
+        {% endif %}
+
+        <a class="navbar-brand d-flex align-items-center" href="{{ dashboard_url }}">
+            <div class="bg-white/20 rounded me-2 p-2 d-flex align-items-center justify-content-center" style="width:40px; height:40px;">
+                <span class="text-white fw-bold">🌿</span>
+            </div>
+            <div>
+                <h5 class="mb-0 text-white">{% trans "E-ADMARC" %}</h5>
+                <small class="text-light">Farm to Table</small>
+            </div>
+        </a>
+        <!-- Mobile toggle button -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar links -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+            
+
+            {% if user.is_authenticated %}
+                {% if user.is_superuser %}
+                <li class="nav-item"><a class="nav-link text-white" href="{% url 'admin_dashboard' %}">🏠 Home</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{% url 'manage_users' %}">👥 User</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="/products"> 📦Products</a></li>
+                {% else %}
+                <li class="nav-item"><a class="nav-link text-white" href="{% url 'users_dashboard' %}">🏠 Home</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{% url 'cart' %}">🛒 Cart</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{% url 'add_product' %}">📦 Sell</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="{% url 'chat_list' %}">💬 Chat</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="/">👤 Profile</a></li>
+                {% endif %}
+
+                <li class="nav-item ms-lg-3">
+                <a class="btn btn-outline-light" href="{% url 'logout' %}">Logout</a>
+                </li>
+            {% else %}
+                <li class="nav-item ms-lg-3">
+                <a class="btn btn-outline-light me-2" href="{% url 'login' %}">Login</a>
+                </li>
+                <li class="nav-item">
+                <a class="btn btn-light text-success" href="{% url 'register' %}">Register</a>
+                </li>
+            {% endif %}
+            </ul>
+        </div>
+        </div>
+    </nav>
+
+
+<main class="container my-4">
+    {% block content %}
+    {% endblock %}
+</main>
+<!-- Footer -->
+<!-- Footer -->
+
+<footer class="text-white mt-auto" style="background: linear-gradient(to bottom right, #111827, #1f2937, #111827);">
+
+
+  <!-- Main Footer Content -->
+  <div class="container py-5">
+    <div class="row text-light">
+
+      <!-- Company Info -->
+      <div class="col-lg-3 col-md-6 mb-4">
+        <div class="d-flex align-items-center mb-3">
+          <div class="bg-success text-white rounded me-2 p-2 d-flex justify-content-center align-items-center" style="width:40px; height:40px;">
+                <span class="text-white fw-bold">🌿</span>
+          </div>
+          <div>
+            <h5 class="mb-0">E-ADMARC</h5>
+            <small class="text-success">Farm to Table</small>
+          </div>
+        </div>
+        <p class="text-light small">Connecting farmers directly with consumers and ADMARC through our e-commerce platform.</p>
+        <div class="d-flex gap-2 mt-2">
+          <a href="#" class="btn btn-dark rounded-circle p-2"><i class="bi bi-facebook"></i></a>
+          <a href="#" class="btn btn-dark rounded-circle p-2"><i class="bi bi-twitter"></i></a>
+          <a href="#" class="btn btn-dark rounded-circle p-2"><i class="bi bi-instagram"></i></a>
+          <a href="#" class="btn btn-dark rounded-circle p-2"><i class="bi bi-linkedin"></i></a>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="col-lg-3 col-md-6 mb-4">
+        <h6 class="text-success mb-3">Quick Links</h6>
+        <ul class="list-unstyled">
+          <li><a href="{% url 'home' %}" class="text-light d-block mb-1">Home</a></li>
+          <li><a href="#" class="text-light d-block mb-1">About Us</a></li>
+          <li><a href="#" class="text-light d-block mb-1">Shop Products</a></li>
+          <li><a href="#" class="text-light d-block mb-1">Become a Farmer</a></li>
+          <li><a href="#" class="text-light d-block mb-1">Contact Us</a></li>
+        </ul>
+      </div>
+
+      <!-- Services -->
+      <div class="col-lg-3 col-md-6 mb-4">
+        <h6 class="text-info mb-3">Services</h6>
+        <ul class="list-unstyled">
+          <li><a href="#" class="text-light d-block mb-1">Farmer Support</a></li>
+          <li><a href="#" class="text-light d-block mb-1">Digital Marketplace</a></li>
+          <li><a href="#" class="text-light d-block mb-1">Delivery Services</a></li>
+          <li><a href="#" class="text-light d-block mb-1">Quality Assurance</a></li>
+          <li><a href="#" class="text-light d-block mb-1">Help & Support</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="col-lg-3 col-md-6 mb-4">
+        <h6 class="text-purple mb-3">Get in Touch</h6>
+        <p class="mb-1"><i class="bi bi-geo-alt me-2"></i>ADMARC House, City Centre, Blantyre, Malawi</p>
+        <p class="mb-1"><i class="bi bi-telephone me-2"></i>+265 997 56 12 92 (Mon-Fri 8AM-5PM)</p>
+        <p class="mb-1"><i class="bi bi-envelope me-2"></i>support@e-admarc.mw</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="bg-dark py-3 border-top border-secondary">
+    <div class="container d-flex flex-column flex-lg-row justify-content-between align-items-center text-light gap-2 gap-lg-0">
+      <div class="text-center text-lg-start">
+        <span>© {{ current_year }} E-ADMARC. Made with ❤️ in Malawi</span>
+      </div>
+      <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-lg-end align-items-center">
+        <a href="https://github.com/francis-mitawa" class="text-success text-decoration-none">Built by Francis Mitawa <i class="bi bi-github"></i></a>
+        <a href="#" class="text-light">Privacy Policy</a>
+        <a href="#" class="text-light">Terms of Service</a>
+        <a href="#" class="text-light">Cookie Policy</a>
+      </div>
+    </div>
+  </div>
+
+  
+
+</footer>
+
+<style>
+.hover-shadow {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.hover-shadow:hover {
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2) !important;
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

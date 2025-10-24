@@ -1,0 +1,41 @@
+<!-- products/templates/products/farmer_submission.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto p-6">
+    <h1 class="text-xl font-bold mb-4">Submit Produce to ADMARC</h1>
+
+    {% if message %}
+    <p class="mb-4 text-blue-600 font-medium">{{ message }}</p>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" class="space-y-4 mb-10">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">
+            Submit
+        </button>
+    </form>
+
+    <h2 class="text-lg font-bold mb-3">📦 Your Submissions</h2>
+    {% if submissions %}
+        <div class="grid gap-4">
+            {% for item in submissions %}
+            <div class="border p-4 rounded shadow-sm">
+                <p><strong>Product:</strong> {{ item.name }}</p>
+                <p><strong>Status:</strong> 
+                    <span class="{% if item.status=='Approved' %}text-green-600{% elif item.status=='Rejected' %}text-red-600{% else %}text-yellow-600{% endif %}">
+                        {{ item.status }}
+                    </span>
+                </p>
+                {% if item.image %}
+                <img src="{{ item.image.url }}" alt="Product" class="mt-2 max-w-xs border"/>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No submissions yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

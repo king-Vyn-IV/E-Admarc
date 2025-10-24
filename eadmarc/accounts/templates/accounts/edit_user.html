@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<style>
+/* simple alignment and full-width inputs without changing form code */
+.edit-user-form .mb-3 label { display:block; margin-bottom:.35rem; font-weight:600; }
+.edit-user-form .mb-3 input,
+.edit-user-form .mb-3 select,
+.edit-user-form .mb-3 textarea { width:100%; box-sizing:border-box; padding:.5rem; }
+.edit-user-form .form-check { display:flex; align-items:center; gap:.5rem; margin-bottom:1rem; }
+.edit-user-form .form-check input[type="checkbox"] { transform:scale(1.05); }
+</style>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6">
+            <h2 class="mb-4 text-center">{{ title }}</h2>
+            <form method="POST" class="edit-user-form">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+
+                <div class="mb-3">
+                    {{ form.username.label_tag }}
+                    {{ form.username }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.email.label_tag }}
+                    {{ form.email }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.password1.label_tag }}
+                    {{ form.password1 }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.password2.label_tag }}
+                    {{ form.password2 }}
+                </div>
+
+                {% if form.is_staff %}
+                    <div class="form-check">
+                        {{ form.is_staff }} {{ form.is_staff.label_tag }}
+                    </div>
+                {% endif %}
+                {% if form.is_superuser %}
+                    <div class="form-check">
+                        {{ form.is_superuser }} {{ form.is_superuser.label_tag }}
+                    </div>
+                {% endif %}
+
+                <div class="text-end">
+                    <button type="submit" class="btn btn-success">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load static %}
+{% load widget_tweaks %}
+
+{% block title %}Your Cart | E-ADMARC{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">🛒 Your Cart</h1>
+
+    {% if cart_items %}
+    <form method="post" action="{% url 'update_cart' %}">
+        {% csrf_token %}
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle shadow-sm">
+                <thead class="table-success text-center">
+                    <tr>
+                        <th>Product</th>
+                        <th>Price (MWK)</th>
+                        <th style="width: 150px;">Quantity</th>
+                        <th>Subtotal (MWK)</th>
+                        <th style="width: 100px;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                    <tr>
+                        <td class="d-flex align-items-center gap-3">
+                            <img 
+                                src="{{ item.submission.image.url|default:'{% static "images/default-product.png" %}' }}" 
+                                alt="{{ item.submission.name }}"
+                                class="rounded" 
+                                style="width: 70px; height: 70px; object-fit: cover;">
+                            <div>
+                                <strong>{{ item.submission.name }}</strong><br>
+                                <small class="text-muted">
+                                    Available: {{ item.submission.quantity }}
+                                </small>
+                            </div>
+                        </td>
+                        <td class="text-center">{{ item.submission.price|intcomma }}</td>
+                        <td class="text-center">
+                            <input 
+                                type="number" 
+                                name="quantities_{{ item.submission.id }}" 
+                                value="{{ item.quantity }}" 
+                                min="1" 
+                                class="form-control form-control-sm text-center"
+                                required>
+                        </td>
+                        <td class="text-center">{{ item.subtotal|intcomma }}</td>
+                        <td class="text-center">
+                            <button 
+                                type="submit" 
+                                name="remove" 
+                                value="{{ item.submission.id }}" 
+                                class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <h4>Total: <span class="text-success fw-bold">MWK {{ total|intcomma }}</span></h4>
+            <div class="d-flex gap-2">
+                <button type="submit" name="update" class="btn btn-primary">
+                    <i class="bi bi-arrow-repeat me-1"></i> Update Cart
+                </button>
+                <a href="{% url 'checkout' %}" class="btn btn-success">
+                    <i class="bi bi-cash-coin me-1"></i> Proceed to Checkout
+                </a>
+            </div>
+        </div>
+    </form>
+
+    {% else %}
+    <div class="alert alert-info shadow-sm">
+        Your cart is empty. 
+        <a href="{% url 'users_dashboard' %}" class="alert-link">Browse products</a> to get started!
+    </div>
+    {% endif %}
+</div>
+
+<!-- Add to Cart JavaScript -->
+<script>
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+function addToCart(submissionId) {
+  fetch(`/accounts/cart/add/${submissionId}/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCookie('csrftoken'),
+    },
+    body: JSON.stringify({ quantity: 1 }),
+  })
+    .then(response => response.json())
+    .then(data => {
+      const messageBox = document.createElement('div');
+      messageBox.className = `alert alert-${data.success ? 'success' : 'danger'} position-fixed top-0 end-0 m-4 shadow`;
+      messageBox.style.zIndex = 1055;
+      messageBox.innerHTML = `<strong>${data.success ? '✅ Success:' : '❌ Error:'}</strong> ${data.message || data.error}`;
+      document.body.appendChild(messageBox);
+      setTimeout(() => messageBox.remove(), 3000);
+    })
+    .catch(err => {
+      console.error('Error:', err);
+      alert('❌ Failed to add to cart.');
+    });
+}
+</script>
+{% endblock %}

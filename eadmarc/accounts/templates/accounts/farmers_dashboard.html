@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Farmer Dashboard | E-ADMARC{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+
+  <!-- Header -->
+  <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center mb-4">
+    <div>
+      <h1 class="fw-bold d-flex align-items-center mb-2">
+        <i class="bi bi-sprout text-success fs-2 me-2"></i> Farmer Dashboard
+      </h1>
+      <p class="text-muted d-flex align-items-center">
+        <i class="bi bi-geo-alt me-1"></i> Welcome back, {{ user.username }}! Here’s what’s happening.
+      </p>
+    </div>
+
+    <!-- Controls -->
+    <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center mt-3 mt-lg-0 gap-2 gap-sm-3">
+      <div class="position-relative">
+        <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+        <input type="text" class="form-control ps-5" placeholder="Search..." />
+      </div>
+      <select class="form-select">
+        <option>Last 7 days</option>
+        <option>Last 30 days</option>
+        <option>Last 90 days</option>
+      </select>
+      <button class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-clockwise"></i>
+      </button>
+      <div class="position-relative">
+        <button class="btn btn-outline-secondary position-relative">
+          <i class="bi bi-bell"></i>
+          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+            {{ notifications_count|default:3 }}
+          </span>
+        </button>
+      </div>
+      <div class="d-flex align-items-center text-muted">
+        <i class="bi bi-calendar me-1"></i> {{ now|date:"M d, Y" }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <p class="text-muted small">Total Products</p>
+          <h3 class="fw-bold">{{ total_products|default:12 }}</h3>
+          <span class="text-success small"><i class="bi bi-arrow-up"></i> +12.5% from last week</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <p class="text-muted small">Total Earnings</p>
+          <h3 class="fw-bold">MWK {{ total_earnings|default:"45,600" }}</h3>
+          <span class="text-success small"><i class="bi bi-arrow-up"></i> +23.8% from last month</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <p class="text-muted small">Active Listings</p>
+          <h3 class="fw-bold">{{ active_listings|default:8 }}</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-body">
+          <p class="text-muted small">Customer Rating</p>
+          <h3 class="fw-bold">{{ customer_rating|default:"4.7/5" }}</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- Quick Actions -->
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-white fw-bold">
+      <i class="bi bi-lightning-charge text-success me-2"></i> Quick Actions
+    </div>
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-4 d-grid">
+          <a href="{% url 'add_product' %}" class="btn btn-success w-100 d-flex align-items-center justify-content-center">
+            <i class="bi bi-plus-circle me-2"></i> Add New Product
+          </a>
+        </div>
+        <div class="col-md-4 d-grid">
+          <a href="{% url 'product_list' %}" class="btn btn-primary w-100 d-flex align-items-center justify-content-center">
+            <i class="bi bi-box-seam me-2"></i> Manage Products
+          </a>
+        </div>
+        <div class="col-md-4 d-grid">
+          <a href="{% url 'transaction_list' %}" class="btn btn-warning w-100 d-flex align-items-center justify-content-center">
+            <i class="bi bi-graph-up-arrow me-2"></i> Transactions
+          </a>
+        </div>
+        <div class="col-md-4 d-grid">
+          <a href="#" class="btn btn-info text-white w-100 d-flex align-items-center justify-content-center">
+            <i class="bi bi-bag-check me-2"></i> Orders
+          </a>
+        </div>
+        <div class="col-md-4 d-grid">
+          <a href="#" class="btn btn-outline-success w-100 d-flex align-items-center justify-content-center">
+            <i class="bi bi-download me-2"></i> Export Reports
+          </a>
+        </div>
+        <div class="col-md-4 d-grid">
+          <a href="#" class="btn btn-secondary w-100 d-flex align-items-center justify-content-center">
+            <i class="bi bi-gear me-2"></i> Settings
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="row g-4">
+    <!-- Recent Activity -->
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0 h-100">
+        <div class="card-header bg-white fw-bold">
+          <i class="bi bi-clock-history me-2 text-primary"></i> Recent Activity
+        </div>
+        <ul class="list-group list-group-flush">
+          {% for activity in recent_activity %}
+          <li class="list-group-item d-flex justify-content-between align-items-start">
+            <div>
+              <strong>{{ activity.action }}</strong> {{ activity.item }}
+              <p class="text-muted small mb-0">{{ activity.time }}</p>
+            </div>
+            <span class="badge {% if activity.type == 'success' %}bg-success{% elif activity.type == 'warning' %}bg-warning{% elif activity.type == 'error' %}bg-danger{% else %}bg-info{% endif %} rounded-pill">
+              {{ activity.price }}
+            </span>
+          </li>
+          {% empty %}
+          <li class="list-group-item text-center text-muted">No recent activity</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+      <!-- Upcoming Deliveries -->
+      <div class="card shadow-sm border-0 mb-4 h-100">
+        <div class="card-header bg-white fw-bold">
+          <i class="bi bi-truck me-2 text-warning"></i> Upcoming Deliveries
+        </div>
+        <div class="card-body p-2">
+          {% for delivery in upcoming_deliveries %}
+          <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+            <div>
+              <strong>{{ delivery.customer }}</strong><br>
+              <span class="text-muted small">{{ delivery.product }} - {{ delivery.quantity }}</span>
+            </div>
+            <span class="badge {% if delivery.status == 'pending' %}bg-warning{% elif delivery.status == 'confirmed' %}bg-success{% elif delivery.status == 'preparing' %}bg-info{% else %}bg-secondary{% endif %}">
+              {{ delivery.status }}
+            </span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      
+
+     
+</div>
+{% endblock %}
+
+<style>
+.hover-scale:hover {
+  transform: scale(1.03);
+  transition: transform 0.3s;
+}
+</style>

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+{% block title %}Register | E-ADMARC{% endblock %}
+{
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center mt-5 mb-5">
+  <div class="card shadow-sm p-4" style="max-width: 500px; width: 100%;">
+    <h3 class="mb-4 text-success text-center fw-bold">Create Account</h3>
+
+    <form method="POST" novalidate>
+      {% csrf_token %}
+
+      <!-- Username -->
+      <div class="mb-3">
+        {{ form.username.label_tag }}
+        {{ form.username|attr:"class:form-control rounded-pill" }}
+        {% for error in form.username.errors %}
+          <div class="text-danger small mt-1">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <!-- Email -->
+      <div class="mb-3">
+        {{ form.email.label_tag }}
+        {{ form.email|attr:"class:form-control rounded-pill" }}
+        {% for error in form.email.errors %}
+          <div class="text-danger small mt-1">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <!-- Password -->
+      <div class="mb-3">
+        {{ form.password1.label_tag }}
+        {{ form.password1|attr:"class:form-control rounded-pill" }}
+        {% for error in form.password1.errors %}
+          <div class="text-danger small mt-1">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="mb-3">
+        {{ form.password2.label_tag }}
+        {{ form.password2|attr:"class:form-control rounded-pill" }}
+        {% for error in form.password2.errors %}
+          <div class="text-danger small mt-1">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <button type="submit" class="btn btn-success w-100 rounded-pill mt-3">Register</button>
+    </form>
+
+    <p class="mt-4 text-center text-muted">
+      Already have an account? <a href="{% url 'login' %}" class="text-success fw-bold">Login</a>
+    </p>
+  </div>
+</div>
+{% endblock %}
+

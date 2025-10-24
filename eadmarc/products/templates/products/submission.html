@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Draft Submissions | ADMARC{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="mx-auto" style="max-width:900px;">
+        <h1 class="h3 fw-bold mb-4 text-center">📋 Your Draft Submissions</h1>
+
+        <!-- Switch layout buttons -->
+        <div class="text-end mb-3">
+            <a href="?view=grid" class="btn btn-outline-secondary btn-sm {% if view_mode == 'grid' %}active{% endif %}">Grid</a>
+            <a href="?view=list" class="btn btn-outline-secondary btn-sm {% if view_mode == 'list' %}active{% endif %}">List</a>
+        </div>
+
+        {% if message %}
+        <div class="alert alert-info">{{ message }}</div>
+        {% endif %}
+
+        {% if drafts %}
+            {% if view_mode == 'grid' %}
+            <!-- Grid view -->
+            <div class="row row-cols-1 row-cols-md-2 g-4">
+                {% for draft in drafts %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        {% if draft.image_url %}
+                        <img src="{{ draft.image_url }}" class="card-img-top" alt="Draft Image" style="object-fit:cover; height:180px;">
+                        {% endif %}
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ draft.name }}</h5>
+                            <p class="card-text mb-1"><strong>Category:</strong> {{ draft.category }}</p>
+                            <p class="card-text mb-1"><strong>Quantity:</strong> {{ draft.quantity }}</p>
+                            <p class="card-text mb-1"><strong>Price:</strong> MWK {{ draft.price }}</p>
+                            {% if draft.description %}
+                            <p class="card-text text-muted small mt-2">{{ draft.description|truncatechars:100 }}</p>
+                            {% endif %}
+                            <div class="mt-auto d-flex justify-content-between gap-2">
+                                <div>
+                                <a href="{% url 'edit_draft' draft.id %}" class="btn btn-primary btn-sm w-100">Edit</a>
+                                </div>
+                                <form method="post" action="{% url 'delete_draft' draft.id %}" class="d-inline flex-grow-1">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger btn-sm w-100">Delete</button>
+                                </form>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <!-- List view -->
+            <ul class="list-group">
+                {% for draft in drafts %}
+                <li class="list-group-item d-flex align-items-center gap-3">
+                    <!-- Image -->
+                    {% if draft.image_url %}
+                    <img src="{{ draft.image_url }}" alt="Draft Image" style="width:100px; height:80px; object-fit:cover; border-radius:4px;">
+                    {% else %}
+                    <div style="width:100px; height:80px; background:#e9ecef; border-radius:4px;"></div>
+                    {% endif %}
+
+                    <!-- Details -->
+                    <div class="flex-grow-1">
+                        <strong>{{ draft.name }}</strong> ({{ draft.category }})<br>
+                        Quantity: {{ draft.quantity }} | Price: MWK {{ draft.price }}
+                        {% if draft.description %}
+                        <p class="mb-0 text-muted small mt-1">{{ draft.description|truncatechars:100 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="d-flex flex-column gap-1">
+                        <a href="{% url 'edit_draft' draft.id %}" class="btn btn-primary btn-sm">Edit</a>
+                        <form method="post" action="{% url 'delete_draft' draft.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        {% else %}
+        <p class="text-center text-muted">You have no draft submissions.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

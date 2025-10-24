@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Chat List{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width: 800px;">
+    <h1 class="mb-4 text-center">💬 Chats</h1>
+
+    {% if contacts %}
+        <div class="list-group">
+            {% for request in contacts %}
+            <div class="list-group-item d-flex align-items-center mb-2 shadow-sm rounded-4"
+                 style="transition: 0.2s; background-color: #f8f9fa; position: relative;">
+                
+                <!-- Clickable avatar + username -->
+                <a href="{% url 'chat_detail' request.seller.id %}" 
+                   class="d-flex align-items-center text-decoration-none flex-grow-1 text-dark">
+                    <img src="{% static 'images/default-avatar.png' %}" 
+                         alt="avatar" 
+                         class="rounded-circle me-3"
+                         width="50" height="50">
+
+                    <div>
+                        <h5 class="mb-1">{{ request.seller.username }}</h5>
+                        <p class="mb-0 text-muted">{{ request.submission.name }}</p>
+                        <small>
+                            Quantity: {{ request.quantity }} | Status: 
+                            {% if request.status == "Pending" %}
+                                <span class="badge bg-warning text-dark">{{ request.status }}</span>
+                            {% elif request.status == "Approved" %}
+                                <span class="badge bg-success">{{ request.status }}</span>
+                            {% else %}
+                                <span class="badge bg-danger">{{ request.status }}</span>
+                            {% endif %}
+                        </small>
+                    </div>
+                </a>
+
+                <!-- Chat icon -->
+                <a href="{% url 'chat_detail' request.seller.id %}" class="text-primary fs-4 me-3">
+                    <i class="bi bi-chat-dots-fill"></i>
+                </a>
+
+                <!-- 3-dot dropdown -->
+                <div class="dropdown">
+                    <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-three-dots"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li>
+                            <a class="dropdown-item text-danger" href="{% url 'delete_chat' request.seller.id %}">
+                                Delete Chat
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info shadow-sm text-center">
+            You haven’t made any contact requests yet.
+            <br>
+            <a href="{% url 'users_dashboard' %}" class="alert-link">Browse products to get started!</a>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+.list-group-item:hover {
+    background-color: #e9f5ff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.dropdown-toggle::after {
+    display: none; /* Hide dropdown arrow */
+}
+a.text-decoration-none:hover {
+    text-decoration: none;
+}
+</style>
+{% endblock %}
